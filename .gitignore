@@ -2,3 +2,8 @@
 /preprocessing
 README.md
 requirements.txt
+/notebook/week3/runs/detect/train-2
+yolov8n.pt
+last.pt
+train.cache
+val.cache
