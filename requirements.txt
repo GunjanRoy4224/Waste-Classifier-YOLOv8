@@ -1,0 +1,8 @@
+streamlit
+ultralytics
+opencv-python
+pafy
+Pillow
+requests
+numpy
+youtube-dl

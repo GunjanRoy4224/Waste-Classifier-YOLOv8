@@ -1,9 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
 
-/preprocessing
-README.md
-requirements.txt
-/notebook/week3/runs/detect/train-2
-yolov8n.pt
-last.pt
-train.cache
-val.cache
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+
+
+# Original TACO dataset
+dataset/
+
+# Converted dataset images and labels
+dataset_yolo/images/
+dataset_yolo/labels/
+
+# Keep YAML file
+!dataset_yolo/dataset.yaml
+
+# other files
+yolo26n.pt
+yolov8s.pt
+notebook/week3/custom_data/labels/train.cache
+notebook/week3/custom_data/labels/val.cache
+notebook/week3/yolov8n.pt
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+.DS_Store
+
+# Generated files
+structure.txt
