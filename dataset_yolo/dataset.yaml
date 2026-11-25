@@ -1,4 +1,4 @@
-path: D:/Team-Zero-Waste/Waste-Classifcation-YOLOv8-TZW/dataset_yolo
+# Paths below are relative to this file. No absolute "path:" key, so Ultralytics uses this folder as the dataset root.
 train: images/train
 val: images/val
 test: images/test

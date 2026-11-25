@@ -1,72 +1,52 @@
-# Team Zero Waste - Waste Classification using YOLOv8
+# Waste Detection with YOLOv8 (Team Zero Waste, ITC IIT Bombay)
 
-An intelligent waste classification and detection system powered by **YOLOv8** and a **Streamlit** web application. This project is built to identify and categorize waste objects using deep learning, with support for various inputs including images and live webcam streams.
+Object detection for waste segregation: a YOLOv8 model trained on the TACO dataset (60 waste categories) with a Streamlit app for images and live webcam.
 
-## Features
+## Results
 
-- **Waste Detection**: Accurately classifies and creates bounding boxes around different types of waste in real-time.
-- **Multiple Input Sources**: Supports waste detection on uploaded images and live webcam streams.
-- **YOLOv8 Integration**: Uses the state-of-the-art YOLOv8 object detection model by Ultralytics.
-- **Interactive UI**: An intuitive, easy-to-use frontend built with Streamlit.
-- **Data Preprocessing**: Scripts included to fetch the TACO dataset, parse COCO annotations into YOLO formats, and automatically create train/val/test splits.
+Trained `yolov8s` for 30 epochs (imgsz 640, batch 16) on an 80/10/10 split of about 1,490 TACO images. The table is the best checkpoint evaluated on the **validation split (149 images)**.
 
-## Project Structure
+| Precision | Recall | mAP@0.5 | mAP@0.5:0.95 |
+|:---:|:---:|:---:|:---:|
+| 58.2% | 20.4% | 25.3% | 22.1% |
 
-```text
-Waste-Classifcation-YOLOv8-TZW/
-│
-├── streamlit - waste detection/ # Streamlit web application frontend and backend
-│   ├── app.py                   # Main Streamlit application
-│   ├── helper.py                # Helper functions for YOLO inference and rendering
-│   ├── settings.py              # Configuration and path settings
-│   ├── images/                  # Default and placeholder images
-│   └── weights/                 # YOLOv8 model weights (.pt files)
-│
-├── preprocessing/               # Dataset preparation scripts
-│   ├── coco_to_yolo.py          # Converts COCO JSON annotations to YOLO txt format
-│   ├── download_teco_data.py    # Downloads the TACO image dataset via Flickr URLs
-│   └── split_dataset.py         # Splits dataset into training, validation, and testing sets
-│
-├── notebook/                    # Jupyter Notebooks for model training and experimentation
-│
-├── requirements.txt             # Python dependencies
-└── README.md                    # Project documentation
+TACO is a small dataset (about 1,490 images spread over 60 categories), so this is a **baseline**. Low recall means many items are missed; the next steps below target that.
+
+## Pipeline
+
+```mermaid
+flowchart LR
+    A[download_teco_data.py<br/>TACO images] --> B[coco_to_yolo.py<br/>COCO to YOLO labels]
+    B --> C[split_dataset.py<br/>train / val / test]
+    C --> D[YOLOv8s training<br/>notebook/waste_classification_YOLOv8.ipynb]
+    D --> E[best.pt]
+    E --> F[Streamlit app<br/>image + webcam]
 ```
 
-## Setup and Installation
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository_url>
-   cd Waste-Classifcation-YOLOv8-TZW
-   ```
-
-2. **Create a virtual environment (optional but recommended):**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-   ```
-
-3. **Install the dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## Running the Web App
-
-To launch the Streamlit frontend, navigate to the application directory and run the server:
+## Quick start
 
 ```bash
+git clone https://github.com/GunjanRoy4224/Waste-Classifier-YOLOv8.git
+cd Waste-Classifier-YOLOv8
+pip install -r requirements.txt
+
 cd "streamlit - waste detection"
-streamlit run app.py
+streamlit run app.py          # uses weights/best.pt
 ```
 
-This will open the application in your default web browser at `http://localhost:8501`.
+To retrain: run the three scripts in `preprocessing/` in order, then the training notebook. `dataset_yolo/dataset.yaml` uses paths relative to its own folder.
 
-## Data Preprocessing (For Training)
+## Repository layout
 
-If you intend to train your own YOLOv8 model on the TACO dataset, you can use the provided preprocessing scripts:
+```text
+preprocessing/            dataset download, COCO to YOLO conversion, splitting
+notebook/                 training and evaluation (waste_classification_YOLOv8.ipynb) plus course exercises
+runs/results/train-3/     training curves (results.csv) and weights
+streamlit - waste detection/   web app (app.py, helper.py, settings.py)
+```
 
-1. **Download Data**: Run `download_teco_data.py` to fetch images.
-2. **Convert Annotations**: Run `coco_to_yolo.py` to translate COCO annotations to the YOLO format.
-3. **Split Dataset**: Use `split_dataset.py` to divide your images into train, val, and test subsets.
+## Limitations and next steps
+
+- Metrics are on the validation split that was also used to pick the best epoch; report held-out test results before quoting these externally.
+- Improve recall: stronger augmentation, a larger backbone, grouping rare classes, class-balanced sampling.
+- Webcam inference speed depends on hardware; no FPS benchmark is included yet.
